@@ -83,10 +83,66 @@ Jim Leyland, 1992, Pittsburgh Pirates
 
 Jim Leyland, 2006, Detroit Tigers
 
-7. Start a new chat (upper left) on Claude desktop.  This time we will pass it 3 text descriptions of the tables.
+5. Start a new chat (upper left) on Claude desktop.  This time we will pass it 3 text descriptions of the tables.
 
-8. In PGAdmin right-click the Lahman database and select the PSQL tool.  In the interface type the command '\d people', this should output a text description of the people table.  Just copy this output and paste it into the Claude desktop.  Do the same for the managers and awardsmangers tables.
+6. In PGAdmin right-click the Lahman database and select the PSQL tool.  In the interface type the command '\d people', this should output a text description of the people table.  Just copy this output and paste it into the Claude desktop.  Do the same for the managers and awardsmangers tables.
 
-9. Once again ask Claude to write a SQL query to answer question 2.  Was there an difference in the two queries.
+7. Once again ask Claude to write a SQL query to answer question 2.  Was there an difference in the two queries.
+
+SELECT DISTINCT
+
+    p.namefirst,
+    
+    p.namelast,
+    
+    am.yearid,
+    
+    am.lgid,
+    
+    m.teamid
+
+FROM awardsmanagers am
+
+JOIN people p ON am.playerid = p.playerid
+
+JOIN managers m 
+
+    ON am.playerid = m.playerid 
+    
+    AND am.yearid = m.yearid 
+    
+    AND am.lgid = m.lgid
+
+WHERE am.awardid = 'TSN Manager of the Year'
+
+    AND am.playerid IN (
+    
+        SELECT playerid FROM awardsmanagers
+        
+        WHERE awardid = 'TSN Manager of the Year' AND lgid = 'AL'
+        
+        INTERSECT
+        
+        SELECT playerid FROM awardsmanagers
+        
+        WHERE awardid = 'TSN Manager of the Year' AND lgid = 'NL'
+    )
+
+ORDER BY p.namelast, p.namefirst, am.yearid;
+
+Results
+
+Davey Jonhson, 1997, Baltimore Orioles
+
+Davey Jonhson, 2012, Washington Nationals
+
+Jim Leyland, 1988, Pittsburgh Pirates
+
+Jim Leyland, 1990, Pittsburgh Pirates
+
+Jim Leyland, 1992, Pittsburgh Pirates
+
+Jim Leyland, 2006, Detroit Tigers
+
 
 10. Now open the people table in Excel.   You can add files to the existing workbook through Claude for Excel.  Add the manager csv as a new sheet then do the same for awardsmanager.  Prompt Claude to create a new sheet that has a list of the managers the meet the criteria mentioned above.  Again, there should be 6 lines of output in the workbook.  If it did not work as expected have Claude update the output to match the actual answer.
