@@ -27,33 +27,60 @@ Claude used 4 tables: 1. people for namefirst and namelast, 2.awardmangers to fi
 4. Write a prompt to instruct Claude to write a PostGreSQL query to answer the above question.  Cut and paste that query into the query tool in PGAdmin. Look at the results.  You should have 6 lines of output.  If you have more or less, the query was not working properly.  Examine, the output and query, see where there was a misunderstanding. Try to expand on your prompt or write a new one  to get a better answer. Keep doing this until you get a proper output or you manually fix the query.
 
 SELECT 
+
     p.namefirst,
+    
     p.namelast,
+    
     am.yearid,
+    
     am.lgid,
+    
     t.name AS team_name
+    
 FROM awardsmanagers am
+
 JOIN people p ON am.playerid = p.playerid
+
 JOIN managers m ON am.playerid = m.playerid AND am.yearid = m.yearid
+
 JOIN teams t ON m.teamid = t.teamid AND m.yearid = t.yearid
+
 WHERE am.awardid = 'TSN Manager of the Year'
+
 AND am.lgid IN ('AL', 'NL')
+
 AND am.playerid IN (
+
     SELECT playerid
+    
     FROM awardsmanagers
+    
     WHERE awardid = 'TSN Manager of the Year'
+    
     AND lgid IN ('AL', 'NL')
+    
     GROUP BY playerid
+    
     HAVING COUNT(DISTINCT lgid) = 2
+    
 )
+
 ORDER BY p.namelast, am.yearid, am.lgid;
 
+
 results
+
 Davey Jonhson, 1997, Baltimore Orioles
+
 Davey Jonhson, 2012, Washington Nationals
+
 Jim Leyland, 1988, Pittsburgh Pirates
+
 Jim Leyland, 1990, Pittsburgh Pirates
+
 Jim Leyland, 1992, Pittsburgh Pirates
+
 Jim Leyland, 2006, Detroit Tigers
 
 7. Start a new chat (upper left) on Claude desktop.  This time we will pass it 3 text descriptions of the tables.
